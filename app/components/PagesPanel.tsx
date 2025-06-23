@@ -2,10 +2,12 @@
 
 // Vendor
 import React, { useState } from "react";
+import classNames from "classnames";
 
 // Components
 import Button from "@/app/components/Button";
 import SettingsMenu from "@/app/components/SettingsMenu";
+import IconButton from "@/app/components/IconButton";
 
 // Types
 import { IconName } from "lucide-react/dynamic";
@@ -17,27 +19,68 @@ interface PageButton {
   isActive: boolean;
 }
 
+// Consts
+const baseLineClasses = "transition-all duration-300 ease-in-out border-1 border-dashed border-[#C0C0C0] h-[1px]";
+
 // Inner Components
-function DashedLine() {
-  return <div className="border-1 border-dashed border-[#C0C0C0] max-w-[20px] w-full h-[1px]"></div>;
+function DashedLine({ hasButton = false, handleClick }: { hasButton?: boolean; handleClick?: () => void }) {
+  const [showButton, setShowButton] = useState<boolean>(false);
+
+  const iconClasses = classNames("transition-all duration-300 ease-in-out", {
+    "w-fit opacity-100": showButton,
+    "w-0 opacity-0": !showButton,
+  });
+
+  const buttonLineClasses = classNames(baseLineClasses, {
+    "w-[20px] opacity-100": showButton,
+    "w-0 opacity-0": !showButton,
+  });
+
+  const lineClasses = classNames(baseLineClasses, {
+    "w-[20px] opacity-100": !showButton,
+    "w-0 opacity-0": showButton,
+  });
+
+  const noButtonlineClasses = classNames(baseLineClasses, "w-[20px]");
+
+  return (
+    <div
+      className="flex items-center"
+      onMouseEnter={() => setShowButton(true)}
+      onMouseLeave={() => setShowButton(false)}
+    >
+      {hasButton && (
+        <>
+          <div className={buttonLineClasses}></div>
+          <div className={iconClasses}>
+            <IconButton onClick={handleClick} />
+          </div>
+          <div className={buttonLineClasses}></div>
+          <div className={lineClasses}></div>
+        </>
+      )}
+
+      {!hasButton && <div className={noButtonlineClasses}></div>}
+    </div>
+  );
 }
 
 export default function PagesPanel() {
   const [buttons, setButtons] = useState<PageButton[]>([
     {
-      id: "0",
+      id: "1",
       text: "Home",
       iconName: "house",
       isActive: true,
     },
     {
-      id: "1",
+      id: "2",
       text: "Profile",
       iconName: "user",
       isActive: false,
     },
     {
-      id: "2",
+      id: "3",
       text: "Settings",
       iconName: "settings",
       isActive: false,
@@ -116,16 +159,21 @@ export default function PagesPanel() {
     );
   };
 
-  const handleAddNewPage = () => {
-    setButtons((prevButtons) => [
-      ...prevButtons,
-      {
-        id: `${prevButtons.length + 1}`,
-        text: `Page ${prevButtons.length + 1}`,
-        iconName: "circle-dashed",
-        isActive: false,
-      },
-    ]);
+  const handleAddNewPage = (newId: number, reOrder: boolean = false, indexToReplace?: number) => {
+    const newElement = {
+      id: `${newId}`,
+      text: `Page ${newId}`,
+      iconName: "circle-dashed" as IconName,
+      isActive: false,
+    };
+
+    if (reOrder && indexToReplace) {
+      const newButtons = [...buttons];
+      newButtons.splice(indexToReplace, 0, newElement);
+      setButtons(newButtons);
+    } else {
+      setButtons((prevButtons) => [...prevButtons, newElement]);
+    }
   };
 
   const handleOnEllipsisClick = (e: any, id: string) => {
@@ -135,7 +183,7 @@ export default function PagesPanel() {
 
   return (
     <div className="bg-[#F9FAFB] p-20 box-border flex z-20 relative items-center" onDragLeave={handleDragLeave}>
-      <SettingsMenu isShowing={showSettings} position={settingsPosition} handleHide={() => console.log("a")} />
+      <SettingsMenu isShowing={showSettings} position={settingsPosition} handleHide={() => setShowSettings(false)} />
 
       {!!buttons.length &&
         buttons.map((button, index) => {
@@ -168,12 +216,17 @@ export default function PagesPanel() {
                 />
               </div>
 
-              {(index === 0 || index !== buttons.length - 1) && <DashedLine />}
+              {(index === 0 || index !== buttons.length - 1) && (
+                <DashedLine
+                  hasButton={true}
+                  handleClick={() => handleAddNewPage(buttons.length + 1, true, index + 1)}
+                />
+              )}
             </React.Fragment>
           );
         })}
       <DashedLine />
-      <Button text="Add page" iconName="plus" isAction onClick={handleAddNewPage} />
+      <Button text="Add page" iconName="plus" isAction onClick={() => handleAddNewPage(buttons.length + 1)} />
     </div>
   );
 }

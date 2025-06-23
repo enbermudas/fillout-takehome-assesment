@@ -1,7 +1,7 @@
 "use client";
 
 // Vendor
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 
 // Components
@@ -200,10 +200,6 @@ export default function PagesPanel() {
       setButtons((prevButtons) => [...prevButtons, newButton]);
     }
   };
-
-  useEffect(() => {
-    console.log(buttons);
-  }, [buttons]);
 
   return (
     <div className="bg-[#F9FAFB] p-20 box-border flex z-20 relative items-center" onDragLeave={handleDragLeave}>

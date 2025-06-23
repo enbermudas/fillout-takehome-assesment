@@ -16,9 +16,17 @@ interface SettingsMenProps {
     y: number;
   };
   handleHide: () => void;
+  handleDelete: () => void;
+  handleDuplicate: () => void;
 }
 
-export default function SettingsMenu({ isShowing, position, handleHide }: SettingsMenProps) {
+export default function SettingsMenu({
+  isShowing,
+  position,
+  handleHide,
+  handleDelete,
+  handleDuplicate,
+}: SettingsMenProps) {
   const wrapperRef = useRef(null);
   onClickOutside(wrapperRef, handleHide);
 
@@ -32,16 +40,15 @@ export default function SettingsMenu({ isShowing, position, handleHide }: Settin
       ref={wrapperRef}
       className={settingsClassName}
       style={{ transform: "translate(-50%, 0)", top: "130px", left: position.x }}
-      onBlur={() => console.log("cuca")}
     >
       <div className="bg-[#FAFBFC] p-3 font-medium text-base text-[#1A1A1A] rounded-t-xl">Settings</div>
       <div className="px-3 pt-3 pb-3.5 flex gap-1 flex-col items-start border-t-1 border-[#E1E1E1]">
         <Button text="Set as first page" iconName="flag" iconColor="#2F72E2" isAction isGhost />
         <Button text="Rename" iconName="pencil-line" isAction isGhost />
         <Button text="Copy" iconName="clipboard" isAction isGhost />
-        <Button text="Duplicate" iconName="copy" isAction isGhost />
+        <Button text="Duplicate" iconName="copy" isAction isGhost onClick={handleDuplicate} />
         <div className="w-full h-[1px] bg-[#E1E1E1]"></div>
-        <Button text="Delete" iconName="trash" isAction isGhost buttonContext="danger" />
+        <Button text="Delete" iconName="trash" isAction isGhost buttonContext="danger" onClick={handleDelete} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 // Vendor
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 
 // Components
@@ -181,9 +181,39 @@ export default function PagesPanel() {
     setShowSettings(true);
   };
 
+  const handleDeleteButton = () => {
+    const newButtons = buttons.filter((button) => !button.isActive);
+    setShowSettings(false);
+    setButtons(newButtons);
+  };
+
+  const handleDuplicateButton = () => {
+    const buttonToDuplicate = buttons.find((button) => button.isActive);
+    if (buttonToDuplicate) {
+      const newButton = {
+        ...buttonToDuplicate,
+        id: `${buttonToDuplicate.id}-duplicated`,
+        isActive: false,
+        text: `${buttonToDuplicate.text} (Duplicated)`,
+      };
+      setShowSettings(false);
+      setButtons((prevButtons) => [...prevButtons, newButton]);
+    }
+  };
+
+  useEffect(() => {
+    console.log(buttons);
+  }, [buttons]);
+
   return (
     <div className="bg-[#F9FAFB] p-20 box-border flex z-20 relative items-center" onDragLeave={handleDragLeave}>
-      <SettingsMenu isShowing={showSettings} position={settingsPosition} handleHide={() => setShowSettings(false)} />
+      <SettingsMenu
+        isShowing={showSettings}
+        position={settingsPosition}
+        handleHide={() => setShowSettings(false)}
+        handleDelete={handleDeleteButton}
+        handleDuplicate={handleDuplicateButton}
+      />
 
       {!!buttons.length &&
         buttons.map((button, index) => {

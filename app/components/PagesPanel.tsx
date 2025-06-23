@@ -1,10 +1,11 @@
 "use client";
 
 // Vendor
-import { useState } from "react";
+import React, { useState } from "react";
 
 // Components
 import Button from "@/app/components/Button";
+import SettingsMenu from "@/app/components/SettingsMenu";
 
 // Types
 import { IconName } from "lucide-react/dynamic";
@@ -45,6 +46,8 @@ export default function PagesPanel() {
 
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [settingsPosition, setSettingsPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const getPreviewButtons = () => {
     if (!draggedItem || dragOverIndex === null) return buttons;
@@ -125,8 +128,15 @@ export default function PagesPanel() {
     ]);
   };
 
+  const handleOnEllipsisClick = (e: any, id: string) => {
+    setSettingsPosition({ x: e.pageX, y: e.pageY });
+    setShowSettings(true);
+  };
+
   return (
     <div className="bg-[#F9FAFB] p-20 box-border flex z-20 relative items-center" onDragLeave={handleDragLeave}>
+      <SettingsMenu isShowing={showSettings} position={settingsPosition} handleHide={() => console.log("a")} />
+
       {!!buttons.length &&
         buttons.map((button, index) => {
           const isDragged = draggedItem === button.id;
@@ -135,9 +145,8 @@ export default function PagesPanel() {
           const isMoving = originalIndex !== previewIndex && !isDragged;
 
           return (
-            <>
+            <React.Fragment key={button.id}>
               <div
-                key={button.id}
                 draggable
                 onDragStart={(e) => handleDragStart(e, button.id)}
                 onDragOver={(e) => handleDragOver(e, index)}
@@ -152,11 +161,15 @@ export default function PagesPanel() {
                   transform: isMoving ? `translateX(${(previewIndex - originalIndex) * 4}px)` : undefined,
                 }}
               >
-                <Button {...button} onClick={() => handleSetActivePage(button.id)} />
+                <Button
+                  {...button}
+                  onClick={() => handleSetActivePage(button.id)}
+                  onEllipsisClick={(e) => handleOnEllipsisClick(e, button.id)}
+                />
               </div>
 
               {(index === 0 || index !== buttons.length - 1) && <DashedLine />}
-            </>
+            </React.Fragment>
           );
         })}
       <DashedLine />

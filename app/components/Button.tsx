@@ -17,6 +17,8 @@ interface ButtonProps {
   isAction?: boolean;
   isGhost?: boolean;
   onClick?: () => void;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onEllipsisClick?: (e: any) => void;
 }
 

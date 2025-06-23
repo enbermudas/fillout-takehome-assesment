@@ -176,7 +176,8 @@ export default function PagesPanel() {
     }
   };
 
-  const handleOnEllipsisClick = (e: any, id: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  const handleOnEllipsisClick = (e: any, _id: string) => {
     setSettingsPosition({ x: e.pageX, y: e.pageY });
     setShowSettings(true);
   };
